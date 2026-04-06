@@ -10,11 +10,12 @@ import java.util.List;
  * of medical records based on specified criteria.
  */
 public class Patient {
-    private int patientId;
-    private List<PatientRecord> patientRecords;
+    private final int patientId;
+    private final List<PatientRecord> patientRecords;
 
     /**
      * Constructs a new Patient with a specified ID.
+     * Note: IDs starts at 0 and the next patient's ID is the last ID plus one.
      * Initializes an empty list of patient records.
      *
      * @param patientId the unique identifier for the patient
@@ -52,6 +53,13 @@ public class Patient {
      *         range
      */
     public List<PatientRecord> getRecords(long startTime, long endTime) {
-        // TODO Implement and test this method
+        List<PatientRecord> recordsInInterval = new ArrayList<>();
+
+        for(PatientRecord record: this.patientRecords) {
+            if(record.getTimestamp() >= startTime && record.getTimestamp() <= endTime) {
+                recordsInInterval.add(record);
+            }
+        }
+        return recordsInInterval;
     }
 }

@@ -1,31 +1,46 @@
 package com.cardio_generator.generators;
 
 import java.util.Random;
-
 import com.cardio_generator.outputs.OutputStrategy;
 
+/**
+ * Provides a method to generate mock values for each patient around their generated baseline
+ * for blood pressure readings.
+ */
 public class BloodPressureDataGenerator implements PatientDataGenerator {
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
-    private int[] lastSystolicValues;
-    private int[] lastDiastolicValues;
+    private final int[] lastSystolicValues;
+    private final int[] lastDiastolicValues;
 
+    /**
+     * Creates a new {@code BloodPressureDataGenerator} object and sets baseline values for each patient.
+     *
+     * @param patientCount number of patients
+     */
     public BloodPressureDataGenerator(int patientCount) {
         lastSystolicValues = new int[patientCount + 1];
         lastDiastolicValues = new int[patientCount + 1];
 
         // Initialize with baseline values for each patient
         for (int i = 1; i <= patientCount; i++) {
-            lastSystolicValues[i] = 110 + random.nextInt(20); // Random baseline between 110 and 130
-            lastDiastolicValues[i] = 70 + random.nextInt(15); // Random baseline between 70 and 85
+            lastSystolicValues[i] = 110 + RANDOM.nextInt(20); // Random baseline between 110 and 130
+            lastDiastolicValues[i] = 70 + RANDOM.nextInt(15); // Random baseline between 70 and 85
         }
     }
 
+    /**
+     * Generates mock blood pressure reading data for specified patient around their baseline
+     * and outputs/stores the data based on specified output strategy.
+     *
+     * @param patientId ID of the patient
+     * @param outputStrategy specifies how to output/where to store
+     */
     @Override
     public void generate(int patientId, OutputStrategy outputStrategy) {
         try {
-            int systolicVariation = random.nextInt(5) - 2; // -2, -1, 0, 1, or 2
-            int diastolicVariation = random.nextInt(5) - 2;
+            int systolicVariation = RANDOM.nextInt(5) - 2; // -2, -1, 0, 1, or 2
+            int diastolicVariation = RANDOM.nextInt(5) - 2;
             int newSystolicValue = lastSystolicValues[patientId] + systolicVariation;
             int newDiastolicValue = lastDiastolicValues[patientId] + diastolicVariation;
             // Ensure the blood pressure stays within a realistic and safe range

@@ -5,9 +5,12 @@ import org.java_websocket.server.WebSocketServer;
 
 import java.net.InetSocketAddress;
 
+/**
+ * Represents a WebSocket data output
+ */
 public class WebSocketOutputStrategy implements OutputStrategy {
 
-    private WebSocketServer server;
+    private final WebSocketServer server;
 
     public WebSocketOutputStrategy(int port) {
         server = new SimpleWebSocketServer(new InetSocketAddress(port));
@@ -15,6 +18,14 @@ public class WebSocketOutputStrategy implements OutputStrategy {
         server.start();
     }
 
+    /**
+     * Outputs the data to the specified server
+     *
+     * @param patientId patient ID
+     * @param timestamp time when the data was recorded in milliseconds since UNIX epoch
+     * @param label label
+     * @param data data to be printed
+     */
     @Override
     public void output(int patientId, long timestamp, String label, String data) {
         String message = String.format("%d,%d,%s,%s", patientId, timestamp, label, data);

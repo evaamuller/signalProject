@@ -1,15 +1,23 @@
 package com.cardio_generator.generators;
 
 import java.util.Random;
-
 import com.cardio_generator.outputs.OutputStrategy;
 
+/**
+ * Provides a method to generate mock values for each patient around their generated baseline
+ * for levels of cholesterol, white and red blood cells.
+ */
 public class BloodLevelsDataGenerator implements PatientDataGenerator {
     private static final Random random = new Random();
     private final double[] baselineCholesterol;
     private final double[] baselineWhiteCells;
     private final double[] baselineRedCells;
 
+    /**
+     * Creates a new {@code BloodLevelsDataGenerator} object and sets baseline values for each patient.
+     *
+     * @param patientCount number of patients
+     */
     public BloodLevelsDataGenerator(int patientCount) {
         // Initialize arrays to store baseline values for each patient
         baselineCholesterol = new double[patientCount + 1];
@@ -24,6 +32,13 @@ public class BloodLevelsDataGenerator implements PatientDataGenerator {
         }
     }
 
+    /**
+     * Generates mock reading data for specified patient around their baseline
+     * and outputs/stores the data based on specified output strategy.
+     *
+     * @param patientId ID of the patient
+     * @param outputStrategy specifies how to output/where to store
+     */
     @Override
     public void generate(int patientId, OutputStrategy outputStrategy) {
         try {
@@ -34,8 +49,7 @@ public class BloodLevelsDataGenerator implements PatientDataGenerator {
 
             // Output the generated values
             outputStrategy.output(patientId, System.currentTimeMillis(), "Cholesterol", Double.toString(cholesterol));
-            outputStrategy.output(patientId, System.currentTimeMillis(), "WhiteBloodCells",
-                    Double.toString(whiteCells));
+            outputStrategy.output(patientId, System.currentTimeMillis(), "WhiteBloodCells", Double.toString(whiteCells));
             outputStrategy.output(patientId, System.currentTimeMillis(), "RedBloodCells", Double.toString(redCells));
         } catch (Exception e) {
             System.err.println("An error occurred while generating blood levels data for patient " + patientId);
