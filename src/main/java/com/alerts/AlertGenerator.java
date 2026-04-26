@@ -2,6 +2,10 @@ package com.alerts;
 
 import com.data_management.DataStorage;
 import com.data_management.Patient;
+import com.data_management.PatientRecord;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The {@code AlertGenerator} class is responsible for monitoring patient data
@@ -11,6 +15,7 @@ import com.data_management.Patient;
  */
 public class AlertGenerator {
     private final DataStorage dataStorage;
+    private final List<AlertStrategy> strategies;
 
     /**
      * Constructs an {@code AlertGenerator} with a specified {@code DataStorage}.
@@ -22,19 +27,37 @@ public class AlertGenerator {
      */
     public AlertGenerator(DataStorage dataStorage) {
         this.dataStorage = dataStorage;
+        strategies = new ArrayList<>();
+    }
+
+    public void addStrategy(AlertStrategy strategy) {
+        strategies.add(strategy);
+    }
+
+    public void deleteStrategy(AlertStrategy strategy) {
+        strategies.remove(strategy);
     }
 
     /**
      * Evaluates the specified patient's data to determine if any alert conditions
      * are met. If a condition is met, an alert is triggered via the
-     * {@link #triggerAlert}
-     * method. This method should define the specific conditions under which an
-     * alert will be triggered.
+     * {@link #triggerAlert} method.
+     * The specific conditions under which an alert will be triggered are defined by the strategies applied.
      *
      * @param patient the patient data to evaluate for alert conditions
      */
     public void evaluateData(Patient patient) {
-        // Implementation goes here
+        List<PatientRecord> records = patient.getRecords(); // Retrieve all patient records
+
+        List<Alert> alerts = new ArrayList<>();
+
+        for(AlertStrategy strategy: strategies) {
+            alerts.addAll(strategy.checkAlert(records));
+        }
+
+        for(Alert alert: alerts) {
+            triggerAlert(alert);
+        }
     }
 
     /**
@@ -45,6 +68,7 @@ public class AlertGenerator {
      * @param alert the alert object containing details about the alert condition
      */
     private void triggerAlert(Alert alert) {
-        // Implementation might involve logging the alert or notifying staff
+        System.out.print("Patient id: " + alert.getPatientId() + " Condition: " + alert.getCondition() + " Time: " + alert.getTimestamp());
     }
+
 }

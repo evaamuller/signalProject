@@ -15,12 +15,13 @@ import com.alerts.AlertGenerator;
  */
 public class DataStorage {
     private final Map<Integer, Patient> patientMap; // Stores patient objects indexed by their unique patient ID.
+    private static DataStorage instance = null;
 
     /**
      * Constructs a new instance of DataStorage, initializing the underlying storage
      * structure.
      */
-    public DataStorage() {
+    private DataStorage() {
         this.patientMap = new HashMap<>();
     }
 
@@ -64,12 +65,41 @@ public class DataStorage {
     }
 
     /**
+     * Retrieves a list of PatientRecord objects for a specific patient.
+     *
+     * @param patientId the unique identifier of the patient whose records are to be
+     *                  retrieved
+     * @return a list of PatientRecord objects that fall within the specified time range
+     *         or Empty list if no patient with specified ID found
+     */
+    public List<PatientRecord> getRecords(int patientId) {
+        Patient patient = patientMap.get(patientId);
+        if (patient != null) {
+            return patient.getRecords();
+        }
+        return new ArrayList<>();
+    }
+
+    /**
      * Retrieves a collection of all patients stored in the data storage.
      *
      * @return a list of all patients
      */
     public List<Patient> getAllPatients() {
         return new ArrayList<>(patientMap.values());
+    }
+
+
+    /**
+     * Singleton Design Pattern.
+     *
+     * @return the only instance of {@code DataStorage} class.
+     */
+    public static DataStorage getInstance(){
+        if(instance == null){
+            instance = new DataStorage();
+        }
+        return instance;
     }
 
     /**
@@ -81,8 +111,8 @@ public class DataStorage {
      */
     public static void main(String[] args){
         // Now implementing a mock data reader.
-        MockDataReader reader = new MockDataReader("src/main/resources/mockData");
-        DataStorage storage = new DataStorage();
+        PatientDataReader reader = new PatientDataReader("src/main/resources/mockData");
+        DataStorage storage = DataStorage.getInstance();
 
         try{
             reader.readData(storage);

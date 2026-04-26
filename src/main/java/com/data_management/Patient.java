@@ -62,4 +62,13 @@ public class Patient {
         }
         return recordsInInterval;
     }
+
+    /**
+     * Retrieves all patient records.
+     *
+     * @return records for the patient
+     */
+    public List<PatientRecord> getRecords() {
+        return patientRecords;
+    }
 }
