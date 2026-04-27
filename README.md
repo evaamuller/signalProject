@@ -62,7 +62,7 @@ java -jar target/cardio_generator-1.0-SNAPSHOT.jar --patient-count 100 --output 
 
 ## Additional files
 - repository contains on the on the source root the following documents:
-  1) Report concerning the Test coverage [View file]([https://github.com/username/repo/blob/main/docs/guide.md](https://github.com/evaamuller/signalProject/blob/877cc71db28d9ff3fd83fb49cba9745619503a0c/TestsAndReport.docx))
+  1) Report concerning the Test coverage [View file]([https://github.com/evaamuller/signalProject/blob/877cc71db28d9ff3fd83fb49cba9745619503a0c/TestsAndReport.docx)])
   2) UML models of the system 
 
 ## License
