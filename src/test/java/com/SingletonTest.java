@@ -1,8 +1,9 @@
+package com;
+
 import com.cardio_generator.HealthDataSimulator;
 import com.data_management.DataStorage;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SingletonTest {
 

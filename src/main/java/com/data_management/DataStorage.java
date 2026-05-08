@@ -38,7 +38,10 @@ public class DataStorage {
      * @param timestamp        the time at which the measurement was taken, in
      *                         milliseconds since the Unix epoch
      */
-    public void addPatientData(int patientId, double measurementValue, String recordType, long timestamp) {
+
+    // Note: synchronized added to the method declaration to prevent multiple concurrent messages coming from WebSocket from corrupting the data
+    // synchronized will execute the commands sequentially
+    public synchronized void addPatientData(int patientId, double measurementValue, String recordType, long timestamp) {
         Patient patient = patientMap.computeIfAbsent(patientId, Patient::new);
         patient.addRecord(measurementValue, recordType, timestamp);
     }
@@ -100,6 +103,18 @@ public class DataStorage {
             instance = new DataStorage();
         }
         return instance;
+    }
+
+    /**
+     * Wipes the storage.
+     * Mainly for testing purposes as {@code DataStorage} is a Singleton class,
+     *      records from previous tests would break the upcoming ones.
+     */
+    public void clearData(){
+        for(Patient patient : patientMap.values()){
+            patient.removeAllRecords();
+        }
+        patientMap.clear();
     }
 
     /**

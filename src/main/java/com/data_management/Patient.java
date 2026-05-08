@@ -42,6 +42,13 @@ public class Patient {
     }
 
     /**
+     * Removes all records of the patient.
+     */
+    public void removeAllRecords() {
+        this.patientRecords.clear();
+    }
+
+    /**
      * Retrieves a list of PatientRecord objects for this patient that fall within a
      * specified time range.
      * The method filters records based on the start and end times provided.

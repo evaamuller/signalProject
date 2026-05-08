@@ -6,7 +6,7 @@ import org.java_websocket.server.WebSocketServer;
 import java.net.InetSocketAddress;
 
 /**
- * Represents a WebSocket data output
+ * Represents a WebSocket data output.
  */
 public class WebSocketOutputStrategy implements OutputStrategy {
 
@@ -32,6 +32,20 @@ public class WebSocketOutputStrategy implements OutputStrategy {
         // Broadcast the message to all connected clients
         for (WebSocket conn : server.getConnections()) {
             conn.send(message);
+        }
+    }
+
+    /**
+     * Close all connections.
+     */
+    public void close() {
+        for (WebSocket conn : server.getConnections()) {
+            conn.close();
+        }
+        try {
+            server.stop();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -66,4 +80,6 @@ public class WebSocketOutputStrategy implements OutputStrategy {
             System.out.println("Server started successfully");
         }
     }
+
+
 }

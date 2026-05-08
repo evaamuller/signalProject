@@ -1,3 +1,5 @@
+package com;
+
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 import org.junit.jupiter.api.Test;

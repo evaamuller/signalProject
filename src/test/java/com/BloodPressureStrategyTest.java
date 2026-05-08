@@ -1,3 +1,5 @@
+package com;
+
 import com.alerts.Alert;
 import com.alerts.BloodPressureStrategy;
 import com.data_management.PatientRecord;

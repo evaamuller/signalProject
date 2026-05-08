@@ -1,3 +1,5 @@
+package com;
+
 import com.alerts.Alert;
 import com.alerts.HeartRateStrategy;
 import com.data_management.PatientRecord;
