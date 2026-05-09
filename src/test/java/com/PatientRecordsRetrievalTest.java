@@ -10,6 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PatientRecordsRetrievalTest {
 
+    /**
+     * Checks that Patient records are correctly being stored and retrieved from the Patient class.
+     */
     @Test
     public void patientRecordsRetrievalTest() {
         Patient patient = new Patient(1);

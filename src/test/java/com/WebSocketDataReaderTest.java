@@ -34,7 +34,7 @@ public class WebSocketDataReaderTest {
      *                    but the {@code DataReader}interface requires it
      */
     @Test
-    public void validMessageTest() throws Exception {
+    public void validMessageTest_shouldStore() throws Exception {
         reader.readData(dataStorage);
         reader.onMessage("1,1775492803835,SystolicPressure,120.0");
 
@@ -53,7 +53,7 @@ public class WebSocketDataReaderTest {
      *                    but the {@code DataReader}interface requires it
      */
     @Test
-    public void validMultipleMessagesTest() throws Exception {
+    public void validMultipleMessagesTest_shouldStore() throws Exception {
         reader.readData(dataStorage);
         reader.onMessage("2,1775492803835,ECG,0.5");
         reader.onMessage("2,1775492803836,SystolicPressure,130.0");
@@ -70,7 +70,7 @@ public class WebSocketDataReaderTest {
      *                    but the {@code DataReader}interface requires it
      */
     @Test
-    public void invalidFormat_tooFewArgumentsTest() throws Exception {
+    public void invalidFormat_tooFewArgumentsTest_shouldNotThrow() throws Exception {
         reader.readData(dataStorage);
         // Note: method should not throw, just print error and skip
         assertDoesNotThrow(() -> reader.onMessage("1,1775492803835,SystolicPressure"));
@@ -82,7 +82,7 @@ public class WebSocketDataReaderTest {
      *                    but the {@code DataReader}interface requires it
      */
     @Test
-    public void invalidFormat_nonNumericIdTest() throws Exception {
+    public void invalidFormat_nonNumericIdTest_shouldNotThrow() throws Exception {
         reader.readData(dataStorage);
         assertDoesNotThrow(() -> reader.onMessage("patient1,1775492803835,SystolicPressure,120.0"));
     }
@@ -93,7 +93,7 @@ public class WebSocketDataReaderTest {
      *                    but the {@code DataReader}interface requires it
      */
     @Test
-    public void invalidFormat_nonNumericMeasurementTest() throws Exception {
+    public void invalidFormat_nonNumericMeasurementTest_shouldNotThrow() throws Exception {
         reader.readData(dataStorage);
         assertDoesNotThrow(() -> reader.onMessage("1,1775492803835,SystolicPressure,92%"));
     }
@@ -102,7 +102,7 @@ public class WebSocketDataReaderTest {
      * Checks that the method does not break when {@code DataStorage} not initialised.
      */
     @Test
-    public void nullDataStorageTest() {
+    public void nullDataStorageTest_shouldNotCrash() {
         // onMessage called before readData sets dataStorage
         assertDoesNotThrow(() -> reader.onMessage("1,1775492803835,SystolicPressure,120.0"));
     }

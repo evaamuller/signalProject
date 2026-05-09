@@ -11,8 +11,11 @@ import java.util.List;
 
 public class BloodPressureStrategyTest {
 
+    /**
+     * Tests that an increasing Systolic Pressure pattern is discovered and Alert is created.
+     */
     @Test
-    public void increasingSystolicPressureTest() {
+    public void increasingSystolicPressure_shouldReturnAlert() {
         // 3 consecutive increasing readings of increasing Systolic Pressure by more than 10
         List<PatientRecord> records = new ArrayList<>();
         records.add(new PatientRecord(1,100,"SystolicPressure",1775492803835L));
@@ -26,8 +29,11 @@ public class BloodPressureStrategyTest {
 
     }
 
+    /**
+     * Tests that a decreasing Diastolic Pressure pattern is discovered and Alert is created.
+     */
     @Test
-    public void decreasingDiastolicPressureTest() {
+    public void decreasingDiastolicPressureTest_shouldReturnAlert() {
         // 3 consecutive decreasing readings of decreasing Diastolic Pressure by more than 10
         List<PatientRecord> records = new ArrayList<>();
         records.add(new PatientRecord(1,100,"DiastolicPressure",1775492803835L));
@@ -40,8 +46,11 @@ public class BloodPressureStrategyTest {
         Assertions.assertEquals(alert.getCondition(), "Diastolic Pressure Trend");
     }
 
+    /**
+     * Checks that Systolic Pressure readings above and below given thresholds are discovered and Alerts are created.
+     */
     @Test
-    public void highLowSystolicPressureTest() {
+    public void highLowSystolicPressureTest_shouldReturnAlerts() {
 
         // Checks for high and low Systolic pressure
         List<PatientRecord> records = new ArrayList<>();
@@ -62,8 +71,11 @@ public class BloodPressureStrategyTest {
 
     }
 
+    /**
+     * Checks that Diastolic Pressure readings above and below given thresholds are discovered and Alerts are created.
+     */
     @Test
-    public void highLowDiastolicPressureTest() {
+    public void highLowDiastolicPressureTest_shouldReturnAlerts() {
         // Checks for high and low Diastolic pressure
         List<PatientRecord> records = new ArrayList<>();
         records.add(new PatientRecord(1,50,"DiastolicPressure",1775492803835L));
@@ -82,9 +94,11 @@ public class BloodPressureStrategyTest {
         Assertions.assertEquals(high.getCondition(), "High Diastolic Pressure");
     }
 
+    /**
+     * Checks that Hypotensive Hypoxemia conditions are discovered and an Alert is created.
+     */
     @Test
-    public void hypotensiveHypoxemiaTest() {
-        // Checks that Hypotensive Hypoxemia is discovered
+    public void hypotensiveHypoxemia_shouldReturnAlert() {
         List<PatientRecord> records = new ArrayList<>();
         records.add(new PatientRecord(1,50,"SystolicPressure",1775492803835L));
         records.add(new PatientRecord(1,85,"Saturation",1775492803835L));
@@ -98,9 +112,11 @@ public class BloodPressureStrategyTest {
         Assertions.assertEquals(hypoxemia.getCondition(), "Hypotensive Hypoxemia");
     }
 
+    /**
+     * Checks that no Alert is created on normal readings.
+     */
     @Test
-    public void noTrendAlertOnZigzagTest() {
-        // Increasing-decreasing pattern
+    public void noTrendAlertOnZigzag_shouldNotReturnAlert() {
         List<PatientRecord> records = new ArrayList<>();
         records.add(new PatientRecord(1, 100, "SystolicPressure", 1000L));
         records.add(new PatientRecord(1, 115, "SystolicPressure", 2000L));
@@ -108,7 +124,6 @@ public class BloodPressureStrategyTest {
 
         BloodPressureStrategy strategy = new BloodPressureStrategy();
         List<Alert> alerts = strategy.checkAlert(records);
-        // No trend alert should fire
         Assertions.assertTrue(alerts.isEmpty());
     }
 }

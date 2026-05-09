@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SingletonTest {
 
+    /**
+     * Tests that the Singleton classes return the same instance of an object.
+     */
     @Test
     public void testSingletons() {
         // Check that it is the same instance

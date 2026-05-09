@@ -5,11 +5,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ *  Checks that different factories return the correct type of Alert and that the class sets the Alert fields correctly.
+ */
 public class AlertFactoriesTest {
-
+    
     @Test
     public void bloodPressureFactory_shouldReturnBloodPressureAlert() {
-        // Checking for the correct type and that the class sets the Alert fields correctly
         Alert alert = new BloodPressureAlertFactory().createAlert(1, "High Systolic Pressure", 1L);
         assertInstanceOf(BloodPressureAlert.class, alert);
         assertEquals(alert.getPatientId(), 1);

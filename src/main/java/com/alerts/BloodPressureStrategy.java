@@ -37,8 +37,9 @@ public class BloodPressureStrategy implements AlertStrategy {
                 saturation.add(record);
             }
         }
+
         /*
-            Check blood pressure trends
+            Checks blood pressure trends.
             Trigger an alert if the patient's blood pressure (systolic or diastolic) shows a
             consistent increase or decrease across three consecutive readings where each reading
             changes by more than 10 mmHg from the last.

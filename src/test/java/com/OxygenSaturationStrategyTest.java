@@ -12,8 +12,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class OxygenSaturationStrategyTest {
 
+    /**
+     * Checks that Alert is created when Saturation is below a threshold.
+     */
     @Test
-    public void lowSaturationTest() {
+    public void lowSaturationTest_shouldCreateAlert() {
         List<PatientRecord> records = new ArrayList<>();
         records.add(new PatientRecord(1, 91, "Saturation", 1000L));
 
@@ -24,8 +27,11 @@ public class OxygenSaturationStrategyTest {
         assertEquals("Low Blood Saturation", alerts.get(0).getCondition());
     }
 
+    /**
+     * Checks that no alert is created when Saturation levels normal.
+     */
     @Test
-    public void normalSaturationTest() {
+    public void normalSaturationTest_shouldNotCreateAlert() {
         List<PatientRecord> records = new ArrayList<>();
         records.add(new PatientRecord(1, 95, "Saturation", 1000L));
 
@@ -35,8 +41,11 @@ public class OxygenSaturationStrategyTest {
         assertTrue(alerts.isEmpty());
     }
 
+    /**
+     * Checks that a rapid drop is identifies and an Alert is created.
+     */
     @Test
-    public void dropWithinTenMinutesTest() {
+    public void dropWithinTenMinutesTest_shouldCreateAlert() {
         List<PatientRecord> records = new ArrayList<>();
         // 5% drop within 10 minutes
         records.add(new PatientRecord(1, 98, "Saturation", 1000L));
@@ -49,8 +58,11 @@ public class OxygenSaturationStrategyTest {
         assertEquals(alert.getCondition(), "Blood Oxygen drop");
     }
 
+    /**
+     * Checks no Alert is created when there is a drop between readings more than 10 minutes apart.
+     */
     @Test
-    public void dropPassTenMinutesTest() {
+    public void dropPassTenMinutesTest_shouldNotCreateAlert() {
         List<PatientRecord> records = new ArrayList<>();
         // 5% drop but more than 10 minutes apart
         records.add(new PatientRecord(1, 98, "Saturation", 1000L));

@@ -10,8 +10,11 @@ import java.util.List;
 
 class DataStorageTest {
 
+    /**
+     * Tests that data are correctly being added and retrieved from the DataStorage.
+     */
     @Test
-    void testAddAndGetRecords() {
+    void testAddAndGetRecords_shouldStoreAndRetrieve() {
         DataStorage storage = DataStorage.getInstance();
         storage.addPatientData(1, 100.0, "WhiteBloodCells", 1714376789050L);
         storage.addPatientData(1, 200.0, "WhiteBloodCells", 1714376789051L);

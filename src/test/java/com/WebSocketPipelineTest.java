@@ -62,7 +62,7 @@ public class WebSocketPipelineTest {
      * @throws Exception {@code Thread.sleep()} may throw InterruptedException
      */
     @Test
-    public void validDataTest() throws Exception {
+    public void validDataTest_shouldStore() throws Exception {
         setUp(8080);
         // Server sends a message
         server.output(1, 1775492803835L, "SystolicPressure", "120.0");
@@ -82,7 +82,7 @@ public class WebSocketPipelineTest {
      * @throws Exception  {@code Thread.sleep()} may throw InterruptedException
      */
     @Test
-    public void multipleMessagesTest() throws Exception {
+    public void multipleMessagesTest_shouldStore() throws Exception {
         setUp(8081);
         server.output(2, 1775492803835L, "SystolicPressure", "120.0");
         server.output(2, 1775492803836L, "ECG", "0.5");
