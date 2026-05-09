@@ -39,10 +39,11 @@ public class AlertGenerator {
     }
 
     /**
-     * Evaluates the specified patient's data to determine if any alert conditions
-     * are met. If a condition is met, an alert is triggered via the
-     * {@link #triggerAlert} method.
+     * Evaluates the specified patient's data to determine if any alert conditions are met.
+     * If a condition is met, an alert is triggered via the {@link #triggerAlert} method.
      * The specific conditions under which an alert will be triggered are defined by the strategies applied.
+     * The method also checks if the same condition was triggered for the given patient in the last 30 minutes.
+     *      If true, it will indicate it by wrapping the {@code Alert} in {@code RepeatedAlertDecorator}.
      *
      * @param patient the patient data to evaluate for alert conditions
      */
@@ -53,6 +54,22 @@ public class AlertGenerator {
 
         for(AlertStrategy strategy: strategies) {
             alerts.addAll(strategy.checkAlert(records));
+        }
+
+        for(Alert alert: alerts) {
+            long thirtyMinutesAgo = alert.getTimestamp() - 30*60*1000;
+            List<Alert> storedAlerts = patient.getAlerts(thirtyMinutesAgo,alert.getTimestamp());
+            for(Alert storedAlert: storedAlerts) {
+                int occurrence = 0;
+                if (alert.getCondition().equals(storedAlert.getCondition())) {
+                   occurrence ++;
+                }
+
+                if(occurrence>0){
+                    alerts.remove(alert);
+                    alerts.add(new RepeatedAlertDecorator(alert,occurrence));
+                }
+            }
         }
 
         for(Alert alert: alerts) {

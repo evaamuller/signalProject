@@ -1,5 +1,7 @@
 package com.data_management;
 
+import com.alerts.Alert;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
 public class Patient {
     private final int patientId;
     private final List<PatientRecord> patientRecords;
+    private final List<Alert> alerts;
 
     /**
      * Constructs a new Patient with a specified ID.
@@ -23,6 +26,7 @@ public class Patient {
     public Patient(int patientId) {
         this.patientId = patientId;
         this.patientRecords = new ArrayList<>();
+        alerts = new ArrayList<>();
     }
 
     /**
@@ -49,6 +53,15 @@ public class Patient {
     }
 
     /**
+     * Records an {@code Alert} generated for the patient.
+     *
+     * @param alert {@code Alert} to be recorded
+     */
+    public void addAlert(Alert alert) {
+        this.alerts.add(alert);
+    }
+
+    /**
      * Retrieves a list of PatientRecord objects for this patient that fall within a
      * specified time range.
      * The method filters records based on the start and end times provided.
@@ -56,8 +69,7 @@ public class Patient {
      * @param startTime the start of the time range, in milliseconds since UNIX
      *                  epoch
      * @param endTime   the end of the time range, in milliseconds since UNIX epoch
-     * @return a list of PatientRecord objects that fall within the specified time
-     *         range
+     * @return a list of {@code PatientRecord} that fall within the specified time range
      */
     public List<PatientRecord> getRecords(long startTime, long endTime) {
         List<PatientRecord> recordsInInterval = new ArrayList<>();
@@ -71,9 +83,27 @@ public class Patient {
     }
 
     /**
+     * Returns all Alerts that were generated for a specific patient in a given time range.
+     *
+     * @param startTime the start of the time range, in milliseconds since UNIX epoch
+     * @param endTime   the end of the time range, in milliseconds since UNIX epoch
+     * @return a list of {@code Alert} that fall in the specified time range
+     */
+    public List<Alert> getAlerts(long startTime, long endTime) {
+        List<Alert> alertsInInterval = new ArrayList<>();
+
+        for(Alert alert : this.alerts) {
+            if(alert.getTimestamp() >= startTime && alert.getTimestamp() <= endTime) {
+                alertsInInterval.add(alert);
+            }
+        }
+        return alertsInInterval;
+    }
+
+    /**
      * Retrieves all patient records.
      *
-     * @return records for the patient
+     * @return a list of all {@code PatientRecord} of the patient
      */
     public List<PatientRecord> getRecords() {
         return patientRecords;

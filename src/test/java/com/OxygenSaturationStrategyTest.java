@@ -55,7 +55,7 @@ public class OxygenSaturationStrategyTest {
         List<Alert> alerts = strategy.checkAlert(records);
         assertEquals(1, alerts.size());
         Alert alert = alerts.get(0);
-        assertEquals(alert.getCondition(), "Blood Oxygen drop");
+        assertEquals(alert.getCondition(), "Blood Oxygen drop HIGH PRIORITY");
     }
 
     /**

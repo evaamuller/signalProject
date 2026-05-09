@@ -12,7 +12,7 @@ public class OxygenSaturationStrategy implements AlertStrategy {
 
     /**
      * Evaluates Blood Saturation data and determines if any alert triggering conditions are met.
-     * If conditions met, creates a new {@code BloodOxygenAlert}.
+     * If conditions met (specified in in-line comments), creates a new {@code BloodOxygenAlert}.
      *
      * @param patientRecords all the records for a specific patient
      * @return a list of all the Alert generated for the patient, an empty ArrayList if no Alerts generated.
@@ -43,12 +43,16 @@ public class OxygenSaturationStrategy implements AlertStrategy {
                 alerts.add(alertFactory.createAlert(id, "Low Blood Saturation",time));
             }
 
-            //Rapid Drop Alert: Trigger an alert if the blood oxygen saturation level drops by 5% or more within a 10-minute interval
+            /*Rapid Drop Alert:
+             = Trigger an alert if the blood oxygen saturation level drops by 5% or more within a 10-minute interval
+
+                 This Alert is treated as HIGH priority and thus, wrapped in a HighPriorityAlertDecorator.
+             */
             for(int j = i+1; j < saturation.size(); j++){
                 PatientRecord satRecord2 = saturation.get(j);
                 double satValue2 = satRecord2.getMeasurementValue();
                 if (satValue1 - satValue2 > 5 && tenMinsDifference(satRecord1.getTimestamp(),satRecord2.getTimestamp())){
-                    alerts.add(alertFactory.createAlert(id, "Blood Oxygen drop",time));
+                    alerts.add(new HighPriorityAlertDecorator(alertFactory.createAlert(id, "Blood Oxygen drop",time)));
                     break;
                 }
             }

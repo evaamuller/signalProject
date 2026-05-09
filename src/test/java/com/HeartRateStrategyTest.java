@@ -24,7 +24,7 @@ public class HeartRateStrategyTest {
         List<Alert> alerts = strategy.checkAlert(records);
 
         assertEquals(1, alerts.size());
-        assertEquals("ECG Anomaly", alerts.get(0).getCondition());
+        assertEquals("ECG Anomaly HIGH PRIORITY", alerts.get(0).getCondition());
     }
 
     /**

@@ -20,7 +20,6 @@ public class PatientDataReader implements DataReader {
         this.directory = directory;
     }
 
-
     /**
      * Reads the mock patient data and stores it to a {@code DataStorage}.
      * Notes on assumptions:

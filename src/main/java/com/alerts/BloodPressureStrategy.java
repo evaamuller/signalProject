@@ -13,6 +13,8 @@ public class BloodPressureStrategy implements AlertStrategy {
     /**
      * Checks Blood Pressure and Blood Saturation data and determines if any alert triggering conditions are met.
      * If conditions met, creates a new {@code BloodPressureAlert}.
+     * If certain thresholds are exceeded, the {@code Alert} is wrapped in {@code HighPriorityAlertDecorator} to give it a higher priority.
+     * Thresholds and conditions are specified in method in-line comments.
      *
      * @param patientRecords all the records for a specific patient
      * @return a list of all the Alert generated for the patient, an empty ArrayList if no Alerts generated.
@@ -40,9 +42,9 @@ public class BloodPressureStrategy implements AlertStrategy {
 
         /*
             Checks blood pressure trends.
-            Trigger an alert if the patient's blood pressure (systolic or diastolic) shows a
-            consistent increase or decrease across three consecutive readings where each reading
-            changes by more than 10 mmHg from the last.
+            = Trigger an alert if the patient's blood pressure (systolic or diastolic) shows:
+              consistent increase or decrease across three consecutive readings where each reading
+              changes by more than 10 mmHg from the last.
         */
         for (int i = 1; i < systolicPressure.size()-1; i++) {
             PatientRecord record = systolicPressure.get(i);
@@ -72,9 +74,12 @@ public class BloodPressureStrategy implements AlertStrategy {
         }
 
         /*
-            Critical Threshold Alert: Trigger an alert if the systolic blood pressure exceeds 180
-            mmHg or drops below 90 mmHg, or if diastolic blood pressure exceeds 120 mmHg or
-            drops below 60 mmHg
+            Critical Threshold Alert:
+            Trigger an alert if:
+            - systolic blood pressure exceeds 180 mmHg or drops below 90 mmHg
+            - diastolic blood pressure exceeds 120 mmHg or drops below 60 mmHg
+
+            These Alerts are treated as HIGH priority and thus, wrapped in a HighPriorityAlertDecorator.
          */
         for(PatientRecord sysRecord : systolicPressure){
             double sysValue = sysRecord.getMeasurementValue();
@@ -82,12 +87,14 @@ public class BloodPressureStrategy implements AlertStrategy {
             long time  = sysRecord.getTimestamp();
 
             if(sysValue > 180){
-                alerts.add(alertFactory.createAlert(id, "High Systolic Pressure",time));
+                alerts.add(new HighPriorityAlertDecorator(alertFactory.createAlert(id, "High Systolic Pressure",time)));
+
             }
             if(sysValue < 90){
-                alerts.add(alertFactory.createAlert(id, "Low Systolic Pressure",time));
+                alerts.add(new HighPriorityAlertDecorator(alertFactory.createAlert(id, "Low Systolic Pressure",time)));
 
                 // Combined Alert: Hypotensive Hypoxemia Alert
+                // NOT high priority
                 for(PatientRecord satRecord : saturation){
                     double satValue = satRecord.getMeasurementValue();
                     if(fiveMinsDifference(sysRecord.getTimestamp(), satRecord.getTimestamp()) && satValue < 92){
@@ -102,9 +109,9 @@ public class BloodPressureStrategy implements AlertStrategy {
             int id = diaRecord.getPatientId();
             long time  = diaRecord.getTimestamp();
             if(value > 120){
-                alerts.add(alertFactory.createAlert(id, "High Diastolic Pressure",time));
+                alerts.add(new HighPriorityAlertDecorator(alertFactory.createAlert(id, "High Diastolic Pressure",time)));
             }else if(value < 60){
-                alerts.add(alertFactory.createAlert(id, "Low Diastolic Pressure",time));
+                alerts.add(new HighPriorityAlertDecorator(alertFactory.createAlert(id, "Low Diastolic Pressure",time)));
             }
         }
 

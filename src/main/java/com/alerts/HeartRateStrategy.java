@@ -16,10 +16,15 @@ public class HeartRateStrategy implements AlertStrategy {
 
     private static final int WINDOW_SIZE = 10;
     private static final double STD_DEV_THRESHOLD = 2.0;
+    private static final double CRITICAL_STD_DEV_THRESHOLD = 3.0;
 
     /**
      * Checks ECG data and determines if any alert triggering conditions are met.
      * If conditions are met, creates a new {@code ECGAlert}.
+     * Conditions from {@code Alert} creation:
+     *      1) reading is more than 2 stds away from the current window mean
+     *      2) if reading is more than 3 stds from the current window mean it is treated
+     *          as HIGH priority and wrapped in {@code HighPriorityAlertDecorator}.
      *
      * @param patientRecords all the records for a specific patient
      * @return a list of all Alerts generated for the patient, empty ArrayList if none.
@@ -64,7 +69,13 @@ public class HeartRateStrategy implements AlertStrategy {
             long time = ecgRecords.get(i).getTimestamp();
 
             if (Math.abs(current - mean) > STD_DEV_THRESHOLD * stdDev) {
-                alerts.add(alertFactory.createAlert(id, "ECG Anomaly", time));
+                if(Math.abs(current - mean) > CRITICAL_STD_DEV_THRESHOLD* stdDev) {
+                    // High priority
+                    alerts.add(new HighPriorityAlertDecorator(alertFactory.createAlert(id, "ECG Anomaly", time)));
+                }else {
+                    // Normal priority
+                    alerts.add(alertFactory.createAlert(id, "ECG Anomaly", time));
+                }
             }
         }
 

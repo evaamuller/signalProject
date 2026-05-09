@@ -66,8 +66,8 @@ public class BloodPressureStrategyTest {
         Alert high = alerts.get(0);
         Alert low = alerts.get(1);
         Assertions.assertEquals(alerts.size(), 2);
-        Assertions.assertEquals(high.getCondition(), "High Systolic Pressure");
-        Assertions.assertEquals(low.getCondition(), "Low Systolic Pressure");
+        Assertions.assertEquals(high.getCondition(), "High Systolic Pressure HIGH PRIORITY");
+        Assertions.assertEquals(low.getCondition(), "Low Systolic Pressure HIGH PRIORITY");
 
     }
 
@@ -90,8 +90,8 @@ public class BloodPressureStrategyTest {
         Alert low = alerts.get(0);
         Alert high = alerts.get(1);
         Assertions.assertEquals(alerts.size(), 2);
-        Assertions.assertEquals(low.getCondition(), "Low Diastolic Pressure");
-        Assertions.assertEquals(high.getCondition(), "High Diastolic Pressure");
+        Assertions.assertEquals(low.getCondition(), "Low Diastolic Pressure HIGH PRIORITY");
+        Assertions.assertEquals(high.getCondition(), "High Diastolic Pressure HIGH PRIORITY");
     }
 
     /**
@@ -108,7 +108,7 @@ public class BloodPressureStrategyTest {
         Alert high = alerts.get(0);
         Alert hypoxemia = alerts.get(1);
         Assertions.assertEquals(alerts.size(), 2);
-        Assertions.assertEquals(high.getCondition(), "Low Systolic Pressure");
+        Assertions.assertEquals(high.getCondition(), "Low Systolic Pressure HIGH PRIORITY");
         Assertions.assertEquals(hypoxemia.getCondition(), "Hypotensive Hypoxemia");
     }
 
