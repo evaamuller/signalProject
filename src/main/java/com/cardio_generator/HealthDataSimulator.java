@@ -1,9 +1,15 @@
 package com.cardio_generator;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import com.cardio_generator.generators.AlertGenerator;
+
+import com.alerts.AlertGenerator;
+import com.alerts.BloodPressureStrategy;
+import com.alerts.HeartRateStrategy;
+import com.alerts.OxygenSaturationStrategy;
 import com.cardio_generator.generators.BloodPressureDataGenerator;
 import com.cardio_generator.generators.BloodSaturationDataGenerator;
 import com.cardio_generator.generators.BloodLevelsDataGenerator;
@@ -13,6 +19,9 @@ import com.cardio_generator.outputs.FileOutputStrategy;
 import com.cardio_generator.outputs.OutputStrategy;
 import com.cardio_generator.outputs.TcpOutputStrategy;
 import com.cardio_generator.outputs.WebSocketOutputStrategy;
+import com.data_management.DataStorage;
+import com.data_management.WebSocketDataReader;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -22,11 +31,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+/**
+ * An entry point of the program.
+ * Runs the whole simulation on a SERVER output
+ *      - creates mock data
+ *      - sends them to a server
+ *      - {@code WebSocketDataReader} reads the data from the server into the {@code DataStorage}
+ *      - data are evaluated in {@code AlertGenerator}
+ *      - all Alerts are printed
+ */
 public class HealthDataSimulator {
 
     private static int patientCount = 50; // Default number of patients
     private static ScheduledExecutorService scheduler;
-    private static OutputStrategy outputStrategy = new ConsoleOutputStrategy(); // Default output strategy
+    private final static int PORT = 8080;
+    private static OutputStrategy outputStrategy = new WebSocketOutputStrategy(PORT);
     private static final Random RANDOM = new Random();
 
     private static HealthDataSimulator instance = null;
@@ -39,7 +58,7 @@ public class HealthDataSimulator {
      * @param args specifies the simulation set up
      * @throws IOException if there was an error when initialising the specified output media
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException{
 
         parseArguments(args);
 
@@ -49,6 +68,29 @@ public class HealthDataSimulator {
         Collections.shuffle(patientIds); // Randomize the order of patient IDs
 
         scheduleTasksForPatients(patientIds);
+
+        if(outputStrategy instanceof WebSocketOutputStrategy) {
+            DataStorage storage = DataStorage.getInstance();
+
+            try {
+                WebSocketDataReader dataReader = new WebSocketDataReader(new URI("ws://localhost:" + PORT));
+                dataReader.readData(storage);
+            } catch (URISyntaxException e) {
+                System.err.println(e.getMessage());
+                System.exit(1);
+            }
+
+            BloodPressureStrategy bloodPressureStrategy = new BloodPressureStrategy();
+            OxygenSaturationStrategy oxygenSaturationStrategy = new OxygenSaturationStrategy();
+            HeartRateStrategy heartRateStrategy = new HeartRateStrategy();
+
+            AlertGenerator alertGenerator = new AlertGenerator(storage);
+            alertGenerator.addStrategy(bloodPressureStrategy);
+            alertGenerator.addStrategy(oxygenSaturationStrategy);
+            alertGenerator.addStrategy(heartRateStrategy);
+            alertGenerator.startPeriodicEvaluation(1); // Evaluates incoming data every minute
+
+        }
     }
 
     /**
@@ -161,14 +203,12 @@ public class HealthDataSimulator {
         BloodSaturationDataGenerator bloodSaturationDataGenerator = new BloodSaturationDataGenerator(patientCount);
         BloodPressureDataGenerator bloodPressureDataGenerator = new BloodPressureDataGenerator(patientCount);
         BloodLevelsDataGenerator bloodLevelsDataGenerator = new BloodLevelsDataGenerator(patientCount);
-        AlertGenerator alertGenerator = new AlertGenerator(patientCount);
 
         for (int patientId : patientIds) {
             scheduleTask(() -> ecgDataGenerator.generate(patientId, outputStrategy), 1, TimeUnit.SECONDS);
             scheduleTask(() -> bloodSaturationDataGenerator.generate(patientId, outputStrategy), 1, TimeUnit.SECONDS);
             scheduleTask(() -> bloodPressureDataGenerator.generate(patientId, outputStrategy), 1, TimeUnit.MINUTES);
             scheduleTask(() -> bloodLevelsDataGenerator.generate(patientId, outputStrategy), 2, TimeUnit.MINUTES);
-            scheduleTask(() -> alertGenerator.generate(patientId, outputStrategy), 20, TimeUnit.SECONDS);
         }
     }
 

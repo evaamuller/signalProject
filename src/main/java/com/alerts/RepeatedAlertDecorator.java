@@ -1,6 +1,7 @@
 package com.alerts;
 
-public class RepeatedAlertDecorator extends Alert{
+public class RepeatedAlertDecorator extends Alert implements AlertDecorator{
+    private final double times;
 
     /**
      * Decorator adds that a given {@code Alert} has been repeated to the condition declaration of the {@code Alert}
@@ -10,7 +11,12 @@ public class RepeatedAlertDecorator extends Alert{
      * @param times how many times was the given Alert repeated for the given Patient in timeframe specified by {#{@link AlertGenerator}}
      */
     public RepeatedAlertDecorator(Alert decoratedAlert, double times) {
-        super(decoratedAlert.getPatientId(), decoratedAlert.getCondition() + " REPEATED " + times, decoratedAlert.getTimestamp());
+        super(decoratedAlert.getPatientId(), decoratedAlert.getCondition(), decoratedAlert.getTimestamp());
+        this.times = times;
     }
 
+    @Override
+    public String getAdditionalInformation() {
+        return " ALERT REPEATED " + times + " times";
+    }
 }

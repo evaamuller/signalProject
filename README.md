@@ -64,6 +64,7 @@ java -jar target/cardio_generator-1.0-SNAPSHOT.jar --patient-count 100 --output 
 - repository contains on the on the source root the following documents:
   1) Report concerning the Test coverage - see: [Test Report](TestsAndReport.pdf)
   2) UML models of the system - see: [UML models](uml_models)
+  3) An overview of the Wsystem pipeline 
 
 ## License
 

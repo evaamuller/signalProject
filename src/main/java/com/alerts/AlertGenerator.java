@@ -6,6 +6,9 @@ import com.data_management.PatientRecord;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The {@code AlertGenerator} class is responsible for monitoring patient data
@@ -38,17 +41,37 @@ public class AlertGenerator {
         strategies.remove(strategy);
     }
 
+
     /**
-     * Evaluates the specified patient's data to determine if any alert conditions are met.
+     * Periodically retrieves the {@code PatientRecord} from the {@code DataStorage} for evaluation.
+     *
+     * @param intervalMinutes frequency of evaluation - e.g. every 5 minutes
+     */
+    public void startPeriodicEvaluation(int intervalMinutes) {
+        long intervalMillis = intervalMinutes * 60 * 1000L;
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        scheduler.scheduleAtFixedRate(() -> {
+            for (Patient patient : dataStorage.getAllPatients()) {
+                evaluateData(patient, intervalMillis);
+            }
+        }, 0, intervalMinutes, TimeUnit.MINUTES);
+    }
+
+    /**
+     * Evaluates the specified patient's data from a specified time interval to determine if any alert conditions are met.
      * If a condition is met, an alert is triggered via the {@link #triggerAlert} method.
      * The specific conditions under which an alert will be triggered are defined by the strategies applied.
-     * The method also checks if the same condition was triggered for the given patient in the last 30 minutes.
+     * The method also checks if the same condition was triggered for the given patient in the last 10 minutes.
      *      If true, it will indicate it by wrapping the {@code Alert} in {@code RepeatedAlertDecorator}.
      *
      * @param patient the patient data to evaluate for alert conditions
      */
-    public void evaluateData(Patient patient) {
-        List<PatientRecord> records = patient.getRecords(); // Retrieve all patient records
+    public void evaluateData(Patient patient, long intervalMillis) {
+        long endTime = System.currentTimeMillis();
+        long startTime = endTime - intervalMillis;
+
+        List<PatientRecord> records = patient.getRecords(startTime,endTime); // Evaluate records in the given interval
 
         List<Alert> alerts = new ArrayList<>();
 
@@ -56,23 +79,30 @@ public class AlertGenerator {
             alerts.addAll(strategy.checkAlert(records));
         }
 
+        // Stores all the Alerts generated for the patient
         for(Alert alert: alerts) {
-            long thirtyMinutesAgo = alert.getTimestamp() - 30*60*1000;
-            List<Alert> storedAlerts = patient.getAlerts(thirtyMinutesAgo,alert.getTimestamp());
+            patient.addAlert(alert);
+        }
+
+        List<Alert> finalAlerts = new ArrayList<>(alerts);
+
+        for(Alert alert: alerts) {
+            long tenMinutesAgo = alert.getTimestamp() - 10*60*1000;
+            List<Alert> storedAlerts = patient.getAlerts(tenMinutesAgo,alert.getTimestamp()-1);
+            int occurrence = 0;
             for(Alert storedAlert: storedAlerts) {
-                int occurrence = 0;
                 if (alert.getCondition().equals(storedAlert.getCondition())) {
                    occurrence ++;
                 }
+            }
 
-                if(occurrence>0){
-                    alerts.remove(alert);
-                    alerts.add(new RepeatedAlertDecorator(alert,occurrence));
-                }
+            if(occurrence>0){
+                finalAlerts.remove(alert);
+                finalAlerts.add(new RepeatedAlertDecorator(alert,occurrence));
             }
         }
 
-        for(Alert alert: alerts) {
+        for(Alert alert: finalAlerts) {
             triggerAlert(alert);
         }
     }
@@ -85,7 +115,11 @@ public class AlertGenerator {
      * @param alert the alert object containing details about the alert condition
      */
     private void triggerAlert(Alert alert) {
-        System.out.print("Patient id: " + alert.getPatientId() + " Condition: " + alert.getCondition() + " Time: " + alert.getTimestamp());
+        System.out.print("\nPatient id: " + alert.getPatientId() + " Condition: " + alert.getCondition() + " Time: " + alert.getTimestamp());
+        if(alert instanceof AlertDecorator) {
+            AlertDecorator alertDecorator = (AlertDecorator) alert;
+            System.out.print(" " + alertDecorator.getAdditionalInformation());
+        }
     }
 
 }

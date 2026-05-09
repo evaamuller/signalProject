@@ -6,12 +6,12 @@ import com.cardio_generator.outputs.OutputStrategy;
 /**
  * Generates random PATIENT-TRIGGERED alerts.
  */
-public class AlertGenerator implements PatientDataGenerator {
+public class PatientAlertGenerator implements PatientDataGenerator {
 
     private static final Random RANDOM_GENERATOR = new Random(); // Changed to private for encapsulation + SCREAMING_SNAKE_CASE as it is a static final field
     private final boolean[] alertStates; // False = resolved, true = pressed // Changed variable name to camelCase
 
-    public AlertGenerator(int patientCount) {
+    public PatientAlertGenerator(int patientCount) {
         alertStates = new boolean[patientCount + 1];
     }
 

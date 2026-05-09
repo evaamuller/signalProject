@@ -76,7 +76,7 @@ public class WebSocketDataReader extends WebSocketClient implements DataReader {
             dataStorage.addPatientData(patientId, measurementValue, label, timestamp);
         }catch (NumberFormatException e){
             // In case the data has invalid format, it gets skipped
-            System.out.println("Invalid data format");
+            System.err.println("Invalid message format (length=" + data.length + "): [" + s + "]");
         }
     }
 
